@@ -3,7 +3,7 @@
 ## Overview
 **Status**: ✅ Complete  
 **Owner**: DevOps Team  
-**Last Updated**: 04 July 2025
+**Last Updated**: 05 July 2025
 
 Nginx reverse proxy configuration for routing traffic to microservices with SSL/TLS termination.
 
@@ -15,12 +15,20 @@ Nginx reverse proxy configuration for routing traffic to microservices with SSL/
 - **Ports**: 443 (HTTPS), 80 (HTTP redirect)
 - **Security**: Strong SSL configuration with HSTS
 
-### Service Routing
-```
-/iam/       → localhost:8080  (Identity & Access Management)
-/patient/   → localhost:8081  (Patient Management)
-/testorder/ → localhost:8082  (Test Order Management)
-```
+### Service Routing (via Nginx)
+
+All external API requests are prefixed with `/api/<service>`.
+
+| Public Path           | Internal Target              | Service Name                      |
+|-----------------------|------------------------------|-----------------------------------|
+| `/api/iam/`           | `localhost:8080/`            | Identity & Access Management      |
+| `/api/patient/`       | `localhost:8081/`            | Patient Management                |
+| `/api/testorder/`     | `localhost:8082/`            | Test Order Management             |
+
+**Note**: Nginx strips the `/api/<service>/` prefix before forwarding to the backend.  
+For example:  
+`/api/iam/login` → forwarded as `/login` to `localhost:8080`
+
 
 ### Configuration File
 Located at: `infrastructure/nginx/reverse_proxy.conf`
