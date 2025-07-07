@@ -10,34 +10,33 @@ Nginx reverse proxy configuration for routing traffic to microservices with SSL/
 ## Configuration Details
 
 ### SSL/TLS Setup
-- **Domain**: [droplet.khoa.email](https://droplet.khoa.email)
+- **Domain**: droplet.khoa.email
 - **Certificate**: Let's Encrypt (auto-renewal)
 - **Ports**: 443 (HTTPS), 80 (HTTP redirect)
 - **Security**: Strong SSL configuration with HSTS
 
-### Service Routing (via Nginx)
-
-All external API requests are prefixed with `/api/<service>`.
+### Service Routing
+All external API requests are prefixed with `/api/<service>` and forwarded to internal services.
 
 | Public Path           | Internal Target              | Service Name                      |
 |-----------------------|------------------------------|-----------------------------------|
-| `/api/iam/`           | `localhost:8080/`            | Identity & Access Management      |
-| `/api/patient/`       | `localhost:8081/`            | Patient Management                |
-| `/api/testorder/`     | `localhost:8082/`            | Test Order Management             |
+| /api/iam/             | localhost:8080/iam/          | Identity & Access Management      |
+| /api/patient/         | localhost:8081/patient/      | Patient Management                |
+| /api/testorder/       | localhost:8082/testorder/    | Test Order Management             |
 
-**Note**: Nginx strips the `/api/<service>/` prefix before forwarding to the backend.  
-For example:  
-`/api/iam/login` → forwarded as `/login` to `localhost:8080`
-
+**URL Rewriting**: Nginx strips the `/api/` prefix before forwarding to the backend.
+Example: `/api/iam/login` → forwarded as `/iam/login` to localhost:8080
 
 ### Configuration File
 Located at: `infrastructure/nginx/reverse_proxy.conf`
 
 ## Security Features
-- SSL/TLS encryption for all traffic
-- Proper proxy headers for backend services
-- 404 response for undefined routes
-- IPv6 support
+- **SSL/TLS**: Automatic HTTPS redirect with HSTS headers
+- **Security Headers**: XSS protection, content type sniffing prevention, frame options
+- **File Upload**: 10MB limit
+- **Access Control**: Blocks dotfiles, actuator endpoints, and Swagger UI
+- **Method Restriction**: Only GET, POST, HEAD allowed
+- **Server Info**: Nginx version hidden
 
 ## Deployment
 1. Copy configuration to `/etc/nginx/sites-available/`
@@ -53,4 +52,3 @@ Located at: `infrastructure/nginx/reverse_proxy.conf`
 ## Maintenance
 - Certificate renewal: Automated via certbot
 - Configuration updates: Restart nginx after changes
-- Log rotation: Handled by logrotate
