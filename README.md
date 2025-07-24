@@ -27,7 +27,4 @@ Microservices system for managing hematology laboratory analyzers and test data.
 - Commits: Angular-style convention
 
 ## Documentation
-### Infrastructure
-- [Cloud Infrastructure](infrastructure/README.md) - DigitalOcean setup and provisioning
-- [Security Configuration](infrastructure/security.md) - Firewall, SSH hardening, and monitoring
-- [Nginx Configuration](infrastructure/proxy.md) - Reverse proxy and SSL setup
+- [Cloud Infrastructure](infrastructure/README.md)
