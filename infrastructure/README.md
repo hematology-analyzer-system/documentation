@@ -2,7 +2,7 @@
 
 **Status**: ✅ Complete
 **Owner**: DevOps Team  
-**Last Updated**: 22 July 2025
+**Last Updated**: 30 July 2025
 
 ## Overview
 Terraform + Ansible automated setup for DigitalOcean droplets running healthcare microservices via Docker Swarm.
@@ -26,7 +26,7 @@ infrastructure/
 ## Services
 - **IAM**: 2 replicas on port 8080
 - **Patient**: 2 replicas on port 8081  
-- **Test Order**: Disabled
+- **Test Order**: 2 replicas on port 8082
 
 ## Usage
 1. Set `DIGITALOCEAN_TOKEN` → `terraform/scripts/apply.sh`
@@ -43,7 +43,7 @@ Nginx reverse proxy configuration for routing traffic to microservices with SSL/
 
 ### SSL/TLS Setup
 - **Domain**: [microservices.khoa.email](https://microservices.khoa.email)
-- **Certificate**: Let's Encrypt (automated renewal via certbot)
+- **Certificate**: Let's Encrypt
 - **Ports**: 443 (HTTPS), 80 (HTTP redirect)
 
 ### Service Routing
@@ -51,12 +51,12 @@ All external API requests are path-based with URL rewriting:
 
 | Public Path           | Internal Target                    | Service Name                      |
 |-----------------------|------------------------------------|-----------------------------------|
-| /auth/                | localhost:8080/iam/auth/          | Identity & Access Management      |
+| /api/iam/             | localhost:8080/iam/               | Identity & Access Management      |
 | /api/patients/        | localhost:8081/patient/patients/  | Patient Management                |
 | /api/testorders/      | localhost:8082/testorder/         | Test Order Management             |
 
 **URL Rewriting**: Nginx rewrites paths before forwarding to backend services.
-Example: `/auth/login` → forwarded as `/iam/auth/login` to localhost:8080
+Example: `/api/iam/auth/login` → forwarded as `/iam/auth/login` to localhost:8080
 
 ### Configuration File
 Located at: `/etc/nginx/sites-available/default` (copied from `nginx/reverse_proxy.conf`)
@@ -69,7 +69,7 @@ Located at: `/etc/nginx/sites-available/default` (copied from `nginx/reverse_pro
 - **Security Headers**: XSS protection, content type sniffing prevention, frame options
 - **File Upload**: 10MB limit
 - **Access Control**: Blocks dotfiles, actuator endpoints, Swagger UI
-- **Method Restriction**: Only GET, POST, HEAD allowed
+- **Method Restriction**: Only GET, POST, HEAD, PUT, DELETE allowed
 - **Server Info**: Nginx version hidden
 
 ## Cloudflare Integration
@@ -118,7 +118,7 @@ Multi-layered security configuration for healthcare microservices infrastructure
 - **SSL/TLS**: Let's Encrypt certificates with strong cipher suites and HSTS
 - **Path Blocking**: Actuator, admin, debug, and Swagger endpoints blocked
 - **User Agent Filtering**: Automated blocking of scanners, bots, and tools
-- **Method Restriction**: Only GET, POST, HEAD requests allowed
+- **Method Restriction**: Only GET, POST, HEAD, PUT, DELETE requests allowed
 
 ### Access Control
 - **Team SSH Keys**: Authorized access for khoa and anh
